@@ -1,21 +1,21 @@
 from flask import Flask, request, render_template, flash, redirect, url_for
-app = Flask(__name__)
+import json
+app = Flask(__name__, template_folder = 'templates')
 
 # /login display login form
 
 
-@app.route('/login', methods=['GET', 'POST'])
+@app.route('/')
 # login function verify username and password
 def login():
-    error = None
+    return render_template('login.html')
 
-    if request.method == 'POST':
-        if request.form['username'] != 'admin' or \
-                request.form['password'] != 'admin':
-            error = 'Invalid username or password. Please try again !'
-        else:
-
-            # flashes on successful login
-            flash('You were successfully logged in')
-            return redirect(url_for('index'))
-    return render_template('login.html', error=error)
+@app.route('/info', methods = ['POST'])
+def info():
+    result = request.form
+    with open('users.json', 'a') as fp:
+        json.dump(result, fp)
+    return render_template("confirm.html", result=result)
+   
+if __name__ == '__main__':
+    app.run(debug=True)
